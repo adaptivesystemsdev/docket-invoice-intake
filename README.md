@@ -44,7 +44,7 @@ explainable.
 
 ```mermaid
 flowchart LR
-    U([Upload · drag & drop<br/>sample batch · API]) --> Q[(Postgres job queue<br/>SKIP LOCKED · retries)]
+    U([Upload · drag & drop<br/>email intake · samples]) --> Q[(Postgres job queue<br/>SKIP LOCKED · retries)]
     Q --> R[Read<br/>text layer + character boxes<br/>scans rendered for vision]
     R --> X[Extract<br/>model chain · strict schema<br/>value + verbatim quote per field]
     X --> G[Ground & check<br/>code only]
@@ -84,6 +84,15 @@ formula, machine-readable reason codes, per-workspace policy.
 | `PO_MISMATCH` · `PO_NOT_FOUND` · `PO_MATCH` | two-way purchase-order match with price tolerance; an unknown or unapproved PO fails |
 | `AMOUNT_OUTLIER` · `TAX_RATE_UNUSUAL` | far above the supplier's usual amounts; a VAT rate that doesn't exist in the supplier's country |
 | `BANK_DETAILS_UNREADABLE` | an IBAN that half-reads is never "probably fine" |
+| `SENDER_LOOKALIKE` · `SENDER_NEW_DOMAIN` · `SENDER_FREEMAIL` · `SENDER_UNVERIFIED` · `SENDER_UNSIGNED` | emailed invoices: a look-alike of the supplier's domain (northw1nd.co.uk, or the same name under another suffix) is stopped; a new domain, a personal address, a failing or missing DKIM signature are flagged |
+
+**Invoices by email.** Each workspace has a private address (`docket-<workspace>.<token>@in.<domain>`), served by our
+own Postfix: the business forwards its invoices mailbox to it (a Gmail filter, an Outlook rule, the domain's
+forwarding) or gives it to suppliers. Every PDF / image attachment becomes a document with who sent it; other
+files are listed and left out, auto-replies and bounces are ignored, the same Message-ID is read once. The sender
+is checked against business email compromise: DKIM is verified per signature (the From domain must have signed,
+From included), registrable domains come from the Public Suffix List, and a supplier's domains are learned only
+from mail that domain signed or from the imported vendor list, so a forged From line never teaches Docket anything.
 
 **4. A second opinion that can only be more careful.** Every finished document gets an independent risk
 read from [TypeSafe Jev](https://typesafe.ai). It sees **only the check results**, never names, amounts or
@@ -158,7 +167,7 @@ names, amounts, IBANs, file names or ids (tested).
 | Routing (done vs needs a person, as expected) | **100 %** | same run, risk gate included |
 | Time per document | **median 2.6 s · p95 4.9 s** (eval) · **≈ 2.9 s** median live | read ≈ 10 ms, checks ≈ 12 ms, Jev ≈ 170–250 ms, the rest is the model |
 | Live sample batches | **17 / 17** routed as expected | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
-| Automated tests | **95** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
+| Automated tests | **141** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
 
 Five models were compared on the same set before choosing the chain. A bigger, newer model was **slower and
 routed worse** (85 %) than the cheap Flash-Lite. More model doesn't buy correctness; deterministic checks do.
@@ -180,6 +189,9 @@ and rotation) with the ground truth known. No real client documents are used for
 - **Outbound webhooks can't be turned inward.** Every resolved address must be public (incl. NAT64 / mapped /
   6to4 forms), the connection is pinned to the checked IP with the certificate verified for the name, no
   redirects, a total deadline well below the worker lease.
+- **Email you can't fake your way through.** The intake endpoint is reachable only from the host's mail pipe
+  (a shared secret, refused when it came through the web server); an address can be rotated at once; a message
+  with two From headers has no trusted sender at all (two parsers could disagree on which one counts).
 - **Nothing silently dropped.** Every input gets a row and a final state; failed jobs are retried, then
   visible.
 - **Private by default.** The app is behind authentication, ports are loopback-only, files never appear in logs.
