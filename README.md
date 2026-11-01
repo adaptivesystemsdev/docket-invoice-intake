@@ -109,7 +109,8 @@ document still gets a row, the checks that need no model, and a person, never an
 </p>
 
 - **Overview:** live counters and a pipeline board. Cards glide Received → Reading → Extracting →
-  Checking → Done / Needs review / Rejected as server events arrive (Postgres LISTEN/NOTIFY → SSE).
+  Checking → Done / Needs review / Rejected as server events arrive (Postgres LISTEN/NOTIFY → SSE). Below it: documents per day (14 days, by where each document is now), a status donut,
+  an "every value read" evidence bar (verified / to check / wrong / missing) and the risk flags as bars.
 - **Document view:** the page on the left with a box around every value read from it, the values on the
   right coloured by evidence (green = found on the page and passed every check, amber = needs a look,
   red = wrong or unreadable). Hover a value and its source glows. To correct one, click the right words on
