@@ -124,8 +124,9 @@ document still gets a row, the checks that need no model, and a person, never an
 - **Vendors:** the vendor master with **approved** vs merely **seen** bank accounts; CSV import of an
   accounting export approves accounts in bulk.
 - **Accuracy:** the latest published evaluation, per model and per document.
-- **Settings:** signed webhook (secret rotation, test event, delivery log with retry), export history,
-  the risk policy.
+- **Settings** (every option explained in place): team notifications, signed webhook (secret rotation, test
+  event, delivery log with retry), export history, the risk policy (incl. tax-rate strictness and a US sales-tax
+  ceiling), Reading (OCR of scans on / off), retention, email intake, the public try-it demo.
 - **⌘K** jumps to any page, document or action; light and dark themes; works on a phone.
 
 ## Outputs
@@ -137,6 +138,12 @@ document still gets a row, the checks that need no model, and a person, never an
 - **Signed webhooks:** `document.done`, `document.needs_review`, `document.approved`, `document.rejected`;
   Stripe-style `t=…,v1=HMAC-SHA256` signature, retries with backoff on network errors / 408 / 429 / 5xx,
   every attempt in a delivery log.
+- **Team notifications:** Slack (a channel of the client's choice, via its own incoming webhook), Telegram or
+  email when a document needs a person (optionally also approved / rejected / straight-through ones): vendor,
+  total, the reasons in plain English, serious risk flags, a link to the document. They ride the same delivery
+  queue as the webhook (retries, delivery log); text from documents is escaped so it can't @-mention a channel;
+  the file never leaves Docket. Email goes out from our own mail server on its own isolated network, DKIM-signed,
+  and the mail server lets Docket send only as its own address.
 - **n8n → Google Sheets:** a ready workflow appends one row per document. It runs live into a shared sheet.
   The same webhook feeds Zapier, Make, Xero / QuickBooks flows or any ERP.
 
@@ -170,7 +177,7 @@ names, amounts, IBANs, file names or ids (tested).
 | Scans and phone photos | **100 %** fields · **100 %** line items · **93.8 %** routing | phone scan, photo at an angle in bad light, photo stored sideways, image-only scanned PDF; production model, 2026-11-01; the one miss went to a person (OCR unsure of a total) |
 | Live sample batches | **20 / 20** documents read, every scan straight through with all values boxed |
 | Europe + US, 25 scenarios × 3 batches | **99.5 %** fields · **99.0 %** line items · **97.3 %** routing | UK / German / Polish / Dutch / French / Italian / Spanish / US invoices, a discount, two VAT rates on one invoice, USD to an EU buyer, a US vendor's new ACH account; 2026-11-01 | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
-| Automated tests | **168** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
+| Automated tests | **178** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
 
 **Europe and the US.** A bank account is an IBAN or a US ACH routing + account number (the routing number's ABA
 checksum is checked in code); both go through the same bank gate, so a US supplier who "changed banks" is stopped
