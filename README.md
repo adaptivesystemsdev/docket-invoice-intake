@@ -16,8 +16,9 @@
   <a href="https://adaptivesystems.dev/live#docket">live activity</a> ·
   <a href="https://status.adaptivesystems.dev/status/stack">status page</a> ·
   <a href="https://adaptivesystems.dev/">adaptivesystems.dev</a><br>
-  <i>Sibling product of the <a href="https://github.com/adaptivesystemsdev/ai-command-center">Front Desk AI stack</a> ·
-  same server, separate stack and database.</i>
+  <i>Sibling of the <a href="https://github.com/adaptivesystemsdev/ai-command-center">Front Desk AI stack</a> ·
+  same server, separate stack and database · the same engine runs
+  <a href="https://github.com/adaptivesystemsdev/dossier-applicant-verification">Dossier</a> (applicant document verification).</i>
 </p>
 
 <p align="center">
@@ -237,6 +238,11 @@ and rotation) with the ground truth known. No real client documents are used for
   for this task.
 
 ---
+
+**Also from us:** [Dossier](https://github.com/adaptivesystemsdev/dossier-applicant-verification) (applicant document verification) ·
+[Front Desk](https://github.com/adaptivesystemsdev/ai-command-center) (conversations) · all three on
+[one page](https://adaptivesystems.dev/one-pager). Need something else built to the same standard?
+[Hire us for a custom build](https://adaptivesystems.dev/contact?topic=custom).
 
 *Portfolio case study. The live app is private; a walkthrough is available on request via
 [Upwork](https://www.upwork.com/freelancers/~01e6b54c0e8f04bcaa) or [adaptivesystems.dev](https://adaptivesystems.dev/contact).*
