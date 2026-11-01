@@ -10,7 +10,9 @@
 > repository holds the case study.
 
 <p align="center">
-  <b>Live:</b> <a href="https://adaptivesystems.dev/docket">product page with live numbers</a> ·
+  <b>Live:</b> <a href="https://adaptivesystems.dev/one-pager">one-pager</a> ·
+  <a href="https://adaptivesystems.dev/docket/try">try your invoice</a> ·
+  <a href="https://adaptivesystems.dev/docket">product page with live numbers</a> ·
   <a href="https://adaptivesystems.dev/live#docket">live activity</a> ·
   <a href="https://status.adaptivesystems.dev/status/stack">status page</a> ·
   <a href="https://adaptivesystems.dev/">adaptivesystems.dev</a><br>
