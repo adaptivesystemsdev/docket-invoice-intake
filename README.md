@@ -168,8 +168,14 @@ names, amounts, IBANs, file names or ids (tested).
 | Routing (done vs needs a person, as expected) | **100 %** | same run, risk gate included |
 | Time per document | **median 2.6 s · p95 4.9 s** (eval) · **≈ 2.9 s** median live | read ≈ 10 ms, checks ≈ 12 ms, Jev ≈ 170–250 ms, the rest is the model |
 | Scans and phone photos | **100 %** fields · **100 %** line items · **93.8 %** routing | phone scan, photo at an angle in bad light, photo stored sideways, image-only scanned PDF; production model, 2026-11-01; the one miss went to a person (OCR unsure of a total) |
-| Live sample batches | **20 / 20** documents read, every scan straight through with all values boxed | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
-| Automated tests | **152** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
+| Live sample batches | **20 / 20** documents read, every scan straight through with all values boxed |
+| Europe + US, 25 scenarios × 3 batches | **99.5 %** fields · **99.0 %** line items · **97.3 %** routing | UK / German / Polish / Dutch / French / Italian / Spanish / US invoices, a discount, two VAT rates on one invoice, USD to an EU buyer, a US vendor's new ACH account; 2026-11-01 | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
+| Automated tests | **168** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
+
+**Europe and the US.** A bank account is an IBAN or a US ACH routing + account number (the routing number's ABA
+checksum is checked in code); both go through the same bank gate, so a US supplier who "changed banks" is stopped
+like a European one with a new IBAN. Tax is checked per country: EU VAT rate by rate (also two rates on one
+invoice), US sales tax within the state + local range. Discounts below the items are part of the arithmetic.
 
 **Scans: two readers that never see each other.** A photo of an invoice goes to the model as an image AND through
 OCR; the model is never shown the OCR text. A value turns green only when the model's quote is found among the
