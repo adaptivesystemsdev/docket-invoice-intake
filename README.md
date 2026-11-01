@@ -45,7 +45,7 @@ explainable.
 ```mermaid
 flowchart LR
     U([Upload · drag & drop<br/>email intake · samples]) --> Q[(Postgres job queue<br/>SKIP LOCKED · retries)]
-    Q --> R[Read<br/>text layer + character boxes<br/>scans rendered for vision]
+    Q --> R[Read<br/>text layer + character boxes<br/>scans: image for the model + OCR words]
     R --> X[Extract<br/>model chain · strict schema<br/>value + verbatim quote per field]
     X --> G[Ground & check<br/>code only]
     G --> K[Risk gate<br/>policy 1.0.0 · reason codes]
@@ -147,6 +147,7 @@ document still gets a row, the checks that need no model, and a person, never an
 | api | Python 3.12 · FastAPI · Pydantic v2 · SQLAlchemy 2 (async) · Alembic | upload, documents, review, exports, settings, SSE |
 | worker | same codebase, 3 loops | job queue (`FOR UPDATE SKIP LOCKED`, leases, retries, dead-letter), pipeline, webhook delivery |
 | reading | pypdfium2 (permissive licence) | text layer with per-character boxes, page rendering; scans detected and read visually |
+| OCR | RapidOCR 3.10 · PaddleOCR PP-OCRv6 small on ONNX Runtime (Apache-2.0, CPU) | scans and phone photos: words with boxes, EXIF + orientation + deskew; chosen by measurement (97 % of digit words exact on harsh photos, ~1.5 s / page) |
 | extraction | pydantic-ai, strict structured output | OpenRouter Gemini 3.5 Flash-Lite → GPT-6 Luna → Ling-3.0 Flash VL → Google AI Studio → Xiaomi MiMo, per-model deadlines |
 | rules | pure Python modules | grounding, number readings, identifier shapes, arithmetic, IBAN / VAT / dates, duplicates, risk gate |
 | second opinion | TypeSafe Jev 1.14 | independent payment-risk read on check facts only |
@@ -166,8 +167,15 @@ names, amounts, IBANs, file names or ids (tested).
 | Line items | **100 %** | same run |
 | Routing (done vs needs a person, as expected) | **100 %** | same run, risk gate included |
 | Time per document | **median 2.6 s · p95 4.9 s** (eval) · **≈ 2.9 s** median live | read ≈ 10 ms, checks ≈ 12 ms, Jev ≈ 170–250 ms, the rest is the model |
-| Live sample batches | **17 / 17** routed as expected | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
-| Automated tests | **141** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
+| Scans and phone photos | **100 %** fields · **100 %** line items · **93.8 %** routing | phone scan, photo at an angle in bad light, photo stored sideways, image-only scanned PDF; production model, 2026-11-01; the one miss went to a person (OCR unsure of a total) |
+| Live sample batches | **20 / 20** documents read, every scan straight through with all values boxed | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
+| Automated tests | **152** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
+
+**Scans: two readers that never see each other.** A photo of an invoice goes to the model as an image AND through
+OCR; the model is never shown the OCR text. A value turns green only when the model's quote is found among the
+OCR words, digit for digit, so a scan gets the same boxes on the page as a PDF. OCR's own confidence score was
+measured too (4,190 digit words): it barely separates right from wrong readings, so the agreement of two
+independent readers is the evidence, not the score.
 
 Five models were compared on the same set before choosing the chain. A bigger, newer model was **slower and
 routed worse** (85 %) than the cheap Flash-Lite. More model doesn't buy correctness; deterministic checks do.
