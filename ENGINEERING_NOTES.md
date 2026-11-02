@@ -74,6 +74,28 @@ Jev had changed a route, which never happened; it is now measured with the same 
   from a local run nobody could check; the published eval (what the app and the site show) was 99.2 % / 98 %. Every
   public number now reads the published run, and a local run is labelled as such.
 
+### Choosing the models again (2026-11-02)
+The same 25 synthetic invoices through every candidate, plus four Dossier packs:
+
+| Model (via OpenRouter) | Fields right | Routed right | Answered | Median |
+|---|---|---|---|---|
+| Gemini 3.5 Flash-Lite (first) | 99.5 % | 96 % | 25/25 | 3.5 s |
+| DeepSeek V4.1 Flash (second, cheapest) | 100 % | 100 % | 25/25 | 4.2 s |
+| GPT-6 Luna | 99.0 % | 92 % | 25/25 | 7.3 s |
+| Gemini 3.8 Flash | 100 % | 88 % | 25/25 | 10.0 s |
+| Gemini 2.5 Flash-Lite | 100 % on what it read | 90 % | **10/25** | 6.6 s |
+
+- **The cheapest listed model is not the cheapest to run.** Gemini 2.5 Flash-Lite shares one upstream pool on
+  OpenRouter and answered "rate-limited upstream" for 15 of 25 invoices, even run alone. A model that doesn't answer
+  costs a person's time.
+- **DeepSeek V4.1 Flash read invoices best, but stays second.** On applicant packs it writes an ID holder's name as
+  one line ("ELEANOR GRACE BRENNAN") where the passport prints surname and given names apart; the grounding rule then
+  marks the name red and a genuine applicant waits for a person. Flash-Lite quotes what is printed.
+- **Pin the host and switch thinking off.** DeepSeek runs on ~40 hosts. With "minimal" reasoning one host took ~10 s;
+  with thinking off ~2 s. The chain now names the hosts measured first (US, no training) and lets the rest follow.
+- **Dropped:** free models (20 requests a minute, 429s, broken JSON), a coding-tool token plan (22–55 s per document,
+  and its terms exclude application backends), and a direct provider API that costs 4–8× more per input token.
+
 ## 3. Checks and fraud
 
 - **The first sender must not define the truth.** An early version trusted the first IBAN it saw for a supplier, so

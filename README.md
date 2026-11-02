@@ -159,7 +159,7 @@ document still gets a row, the checks that need no model, and a person, never an
 | worker | same codebase, 3 loops | job queue (`FOR UPDATE SKIP LOCKED`, leases, retries, dead-letter), pipeline, webhook delivery |
 | reading | pypdfium2 (permissive licence) | text layer with per-character boxes, page rendering; scans detected and read visually |
 | OCR | RapidOCR 3.10 · PaddleOCR PP-OCRv6 small on ONNX Runtime (Apache-2.0, CPU) | scans and phone photos: words with boxes, EXIF + orientation + deskew; chosen by measurement (97 % of digit words exact on harsh photos, ~1.5 s / page) |
-| extraction | pydantic-ai, strict structured output | OpenRouter Gemini 3.5 Flash-Lite → GPT-6 Luna → Ling-3.0 Flash VL → Google AI Studio → Xiaomi MiMo, per-model deadlines |
+| extraction | pydantic-ai, strict structured output | OpenRouter Gemini 3.5 Flash-Lite → DeepSeek V4.1 Flash → GPT-6 Luna → Gemini 3.8 Flash, per-model deadlines (order re-measured 2026-11-02) |
 | rules | pure Python modules | grounding, number readings, identifier shapes, arithmetic, IBAN / VAT / dates, duplicates, risk gate |
 | second opinion | TypeSafe Jev 1.14 | independent payment-risk read on check facts only |
 | data | PostgreSQL 16 + `pg_trgm` | documents, pages, jobs, extractions, reviews, vendors, POs, deliveries, append-only events |
