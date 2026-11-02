@@ -225,6 +225,8 @@ and rotation) with the ground truth known. No real client documents are used for
 
 ## What I learned
 
+The long version, with dates, numbers and what didn't work: [ENGINEERING_NOTES.md](ENGINEERING_NOTES.md).
+
 - **Grounding proves presence, not kind.** The model put an amount into the VAT field; the text *was* on the
   page, so it showed green. Shape checks per identifier now run after grounding.
 - **Evals find your bugs, not the model's.** The first evaluation routed 43–64 % correctly. Almost every miss was
