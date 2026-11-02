@@ -24,8 +24,8 @@
 <p align="center">
   <img alt="documents processed" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fadaptivesystems.dev%2Flive%2Fdocket%2Fstats.json&query=%24.documents&label=documents%20processed&color=22B8F0">
   <img alt="median time" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fadaptivesystems.dev%2Flive%2Fdocket%2Fstats.json&query=%24.median_total_ms&suffix=%20ms&label=median%20per%20document&color=2EE6C8">
-  <img alt="eval fields" src="https://img.shields.io/badge/eval%20fields-99.5%25-2EE6C8">
-  <img alt="eval routing" src="https://img.shields.io/badge/eval%20routing-100%25-2EE6C8">
+  <img alt="eval fields" src="https://img.shields.io/badge/eval%20fields-99.2%25-2EE6C8">
+  <img alt="eval routing" src="https://img.shields.io/badge/eval%20routing-98%25-2EE6C8">
 </p>
 
 <p align="center">
@@ -174,14 +174,14 @@ names, amounts, IBANs, file names or ids (tested).
 
 | Metric | Value | Notes |
 |---|---|---|
-| Field accuracy | **99.5 %** | published eval, 34 synthetic documents (UK / German / Polish / Dutch / US invoices, receipts, POs, credit notes, multi-page, scans), production model, 2026-10-31 |
-| Line items | **100 %** | same run |
-| Routing (done vs needs a person, as expected) | **100 %** | same run, risk gate included |
-| Time per document | **median 2.6 s · p95 4.9 s** (eval) · **≈ 2.9 s** median live | read ≈ 10 ms, checks ≈ 12 ms, Jev ≈ 170–250 ms, the rest is the model |
+| Field accuracy | **99.2 %** | published eval (what the app's Accuracy page and the company site show), 50 synthetic documents from 8 countries (invoices, receipts, POs, credit notes, multi-page, scans, fraud cases), production model, 2026-11-01 |
+| Line items | **99.0 %** | same run |
+| Routing (done vs needs a person, as expected) | **98 %** | same run, risk gate included |
+| Time per document | **median 3.0 s** (eval) · **≈ 2.9 s** median live | read ≈ 10 ms, checks ≈ 12 ms, Jev ≈ 170–250 ms, the rest is the model |
 | Scans and phone photos | **100 %** fields · **100 %** line items · **93.8 %** routing | phone scan, photo at an angle in bad light, photo stored sideways, image-only scanned PDF; production model, 2026-11-01; the one miss went to a person (OCR unsure of a total) |
 | Live sample batches | **20 / 20** documents read, every scan straight through with all values boxed |
-| Europe + US, 25 scenarios × 3 batches | **99.5 %** fields · **99.0 %** line items · **97.3 %** routing | UK / German / Polish / Dutch / French / Italian / Spanish / US invoices, a discount, two VAT rates on one invoice, USD to an EU buyer, a US vendor's new ACH account; 2026-11-01 | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
-| Automated tests | **178** | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
+| Europe + US, 25 scenarios × 3 batches (a local development run, not the published eval) | **99.5 %** fields · **99.0 %** line items · **97.3 %** routing | UK / German / Polish / Dutch / French / Italian / Spanish / US invoices, a discount, two VAT rates on one invoice, USD to an EU buyer, a US vendor's new ACH account; 2026-11-01 | bank change, look-alike, duplicate, PO match / mismatch, swapped digits, due date before issue date, not a business document |
+| Automated tests | **310** (Docket + Dossier engine) | the model replaced by a scripted one; property-based tests for the IBAN / VAT / number validators; `mypy --strict`, ruff |
 
 **Europe and the US.** A bank account is an IBAN or a US ACH routing + account number (the routing number's ABA
 checksum is checked in code); both go through the same bank gate, so a US supplier who "changed banks" is stopped
