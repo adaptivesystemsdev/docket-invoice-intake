@@ -37,6 +37,29 @@ passing documents get a "moderate"), which is why a moderate opinion is recorded
 gate's own codes, so it can't find what the gate missed; its value is a documented, independent sanity check on the
 final call. The same overlay runs in Front Desk (leads) and Dossier (applicant documents).
 
+### The review queue, measured (2026-11-02)
+The queue used to sort by "worst reading first". Replayed on the 122 documents waiting (synthetic scenarios with a
+known answer), that put the money-at-risk documents (duplicates, bank-detail changes, PO mismatches) at an average
+position of **95 of 122**, one in the top 20: a forged bank change is read perfectly, so it sank. 44 of those 45
+documents also score **under** the gate's review line (60): a hard gate stops them, not the score.
+
+| Order tried | Fraud in top 20 | Fraud's average position | nDCG |
+|---|---|---|---|
+| Worst reading first (before) | 1 | 95 | 0.75 |
+| Jev's P(high) alone | 12 | 57 | — |
+| Risk score | 14 | 34 | 0.88 |
+| **A gate failed › a wrong value › the rest, then score, then Jev** (now) | **14** | **33** | **0.88** |
+
+Jev as the last tie-breaker is neutral to slightly better; placed before the score it made the ranking worse. So the
+deterministic verdict orders the queue and the second opinion only breaks ties. The queue now shows three labelled
+groups: money at risk, values to fix, other.
+
+### One record across the three products
+Every second opinion (Docket documents, Dossier cases, Front Desk leads) now carries the same core fields: `used`,
+`model`, `ms`, `risk` (low / moderate / high), `p_risk`, `agreement` (agree / disagree / strong_disagree, against the
+code's decision) and `effect` (none / noted / sent_to_person). In Front Desk the old agreement field said "agree" unless
+Jev had changed a route, which never happened; it is now measured with the same rule as here.
+
 ## 2. Evals
 
 - **Evals find your bugs, not the model's.** The first evaluation routed 43–64 % correctly. Almost every miss was our
