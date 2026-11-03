@@ -151,6 +151,15 @@ document still gets a row, the checks that need no model, and a person, never an
 - **n8n → Google Sheets:** a ready workflow appends one row per document. It runs live into a shared sheet.
   The same webhook feeds Zapier, Make, Xero / QuickBooks flows or any ERP.
 
+## In your AI assistant (MCP)
+
+A public MCP server puts Docket's sandbox inside Claude: read and check a sample or your own invoice, ask for the
+risk gate's decision, approve a supplier, and ask **why** a document came out as it did. It fronts the same try-it
+API as the website, behind OAuth 2.1 (PKCE, client metadata documents, dynamic registration, refresh rotation with
+reuse detection) and a human check on the consent page; limits are per person (6 documents an hour, 20 a day) with
+their own daily total, so connector traffic can't use up the website's demo. No tool takes free text that reaches a
+model. Working in Claude since 2026-11-03. How to connect: [https://adaptivesystems.dev/mcp](https://adaptivesystems.dev/mcp).
+
 ## Architecture
 
 | Part | Technology | Role |
